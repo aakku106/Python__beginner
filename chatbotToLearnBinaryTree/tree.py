@@ -53,21 +53,27 @@ def draw_tree(canvas, node, x, y, x_offset=100, y_offset=100):
         canvas.create_line(x, y, x + x_offset, y + y_offset)
         draw_tree(canvas, node.right, x + x_offset, y + y_offset, x_offset, y_offset)
 
-# Function to handle inserting a left node
-def on_insert_left_button(canvas, root):
-    parent_value = "Root"  # Example: could be taken from an input field
-    new_value = "Left"  # New node value from input
-    root = insert_node(root, parent_value, new_value, "left")
-    canvas.delete("all")  # Clear the canvas
-    draw_tree(canvas, root, 300, 100)  # Redraw the tree
+# Function to handle inserting a left node with user input
+def on_insert_left_button(canvas, root, parent_value_entry, new_value_entry):
+    try:
+        parent_value = int(parent_value_entry.get())  # Get parent value from entry
+        new_value = int(new_value_entry.get())  # Get new node value from entry
+        root = insert_node(root, parent_value, new_value, "left")
+        canvas.delete("all")  # Clear the canvas
+        draw_tree(canvas, root, 300, 100)  # Redraw the tree
+    except ValueError:
+        print("Invalid input. Please enter valid integers.")
 
-# Function to handle inserting a right node
-def on_insert_right_button(canvas, root):
-    parent_value = "Root"  # Example: could be taken from an input field
-    new_value = "Right"  # New node value from input
-    root = insert_node(root, parent_value, new_value, "right")
-    canvas.delete("all")  # Clear the canvas
-    draw_tree(canvas, root, 300, 100)  # Redraw the tree
+# Function to handle inserting a right node with user input
+def on_insert_right_button(canvas, root, parent_value_entry, new_value_entry):
+    try:
+        parent_value = int(parent_value_entry.get())  # Get parent value from entry
+        new_value = int(new_value_entry.get())  # Get new node value from entry
+        root = insert_node(root, parent_value, new_value, "right")
+        canvas.delete("all")  # Clear the canvas
+        draw_tree(canvas, root, 300, 100)  # Redraw the tree
+    except ValueError:
+        print("Invalid input. Please enter valid integers.")
 
 def main():
     root = tk.Tk()
@@ -75,14 +81,26 @@ def main():
     canvas.pack()
 
     # Create the root node
-    root_node = TreeNode("Root")
+    root_node = TreeNode(1)  # Root node starts with value 1
+    
+    # Entry fields for parent node and new node values
+    entry_frame = ttk.Frame(root)
+    entry_frame.pack(pady=10)
+    
+    ttk.Label(entry_frame, text="Parent Node Value:").grid(row=0, column=0)
+    parent_value_entry = ttk.Entry(entry_frame)
+    parent_value_entry.grid(row=0, column=1)
+    
+    ttk.Label(entry_frame, text="New Node Value:").grid(row=1, column=0)
+    new_value_entry = ttk.Entry(entry_frame)
+    new_value_entry.grid(row=1, column=1)
     
     # Button to insert nodes
     button_frame = ttk.Frame(root)
-    button_frame.pack()
+    button_frame.pack(pady=10)
     
-    ttk.Button(button_frame, text="Insert Left Node", command=lambda: on_insert_left_button(canvas, root_node)).grid(row=0, column=0)
-    ttk.Button(button_frame, text="Insert Right Node", command=lambda: on_insert_right_button(canvas, root_node)).grid(row=0, column=1)
+    ttk.Button(button_frame, text="Insert Left Node", command=lambda: on_insert_left_button(canvas, root_node, parent_value_entry, new_value_entry)).grid(row=0, column=0)
+    ttk.Button(button_frame, text="Insert Right Node", command=lambda: on_insert_right_button(canvas, root_node, parent_value_entry, new_value_entry)).grid(row=0, column=1)
 
     # Draw the initial tree
     draw_tree(canvas, root_node, 300, 100)
