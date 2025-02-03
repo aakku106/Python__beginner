@@ -50,12 +50,13 @@ def draw_node(canvas, x, y, text):
         x + node_radius, y + node_radius,
         fill="lightblue"
     )
-    canvas.create_text(x, y, text, font=("Arial", 12))
+    canvas.create_text(x, y, text=text, font=("Arial", 12))
 
 def draw_tree(canvas, node, x, y, offset):
-    """Recursive function to draw the binary tree."""
+    """Recursive function to draw the binary tree with lines."""
     if node is not None:
         draw_node(canvas, x, y, node.value)
+        # Draw lines to the left and right children
         if node.left:
             canvas.create_line(x, y + node_radius, x - offset, y + 100 - node_radius)
             draw_tree(canvas, node.left, x - offset, y + 100, offset // 2)
