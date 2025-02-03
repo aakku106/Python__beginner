@@ -1,3 +1,12 @@
+'''
+    This is ai made code to
+    show how the binary tree 
+    works, as per 2025/feb/4/tuesday 00:32
+    this code is preety much incomplete and inaccurate 
+
+'''
+
+
 import tkinter as tk
 from tkinter import ttk
 
