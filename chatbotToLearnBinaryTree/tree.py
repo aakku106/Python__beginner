@@ -1,89 +1,92 @@
-from tkinter import Tk, Canvas, ttk
+import tkinter as tk
+from tkinter import ttk
 
-# Global variables for tree visualization
-node_radius = 20
-canvas_width = 600
-canvas_height = 400
-
-# Store the tree structure as a dictionary for visualization
-binary_tree = {"root": None}
-
+# TreeNode class represents a single node in the tree
 class TreeNode:
     def __init__(self, value):
         self.value = value
         self.left = None
         self.right = None
 
-def reinitialize(canvas):
-    """Clear and reset the canvas."""
-    canvas.delete("all")
-    binary_tree["root"] = None
+# Function to insert a new node in the tree
+def insert_node(root, parent_value, new_value, position):
+    if root is None:
+        return None
+    
+    if root.value == parent_value:
+        new_node = TreeNode(new_value)
+        if position == "left":
+            if root.left is None:
+                root.left = new_node
+            else:
+                print(f"Left node already exists under {root.value}")
+        elif position == "right":
+            if root.right is None:
+                root.right = new_node
+            else:
+                print(f"Right node already exists under {root.value}")
+        return root
 
-def insert_node_to_left(canvas):
-    """Insert a node to the left of the root if it doesn't exist."""
-    if binary_tree["root"] is None:
-        binary_tree["root"] = TreeNode("Root")
-        draw_node(canvas, canvas_width // 3, 150, "Root")
-    else:
-        if binary_tree["root"].left is None:
-            binary_tree["root"].left = TreeNode("Left")
-            draw_node(canvas, canvas_width // 6, 250, "Left")
-        else:
-            print("Left node already exists.")
+    if root.left:
+        insert_node(root.left, parent_value, new_value, position)
+    if root.right:
+        insert_node(root.right, parent_value, new_value, position)
+    
+    return root
 
-def insert_node_to_right(canvas):
-    """Insert a node to the right of the root if it doesn't exist."""
-    if binary_tree["root"] is None:
-        binary_tree["root"] = TreeNode("Root")
-        draw_node(canvas, 2 * canvas_width // 3, 150, "Root")
-    else:
-        if binary_tree["root"].right is None:
-            binary_tree["root"].right = TreeNode("Right")
-            draw_node(canvas, 5 * canvas_width // 6, 250, "Right")
-        else:
-            print("Right node already exists.")
+# Function to draw the tree recursively
+def draw_tree(canvas, node, x, y, x_offset=100, y_offset=100):
+    if node is None:
+        return
+    
+    # Draw the current node
+    canvas.create_oval(x-20, y-20, x+20, y+20, fill="lightblue")
+    canvas.create_text(x, y, text=node.value, font=("Arial", 12))
+    
+    # Draw the left child if exists
+    if node.left:
+        canvas.create_line(x, y, x - x_offset, y + y_offset)
+        draw_tree(canvas, node.left, x - x_offset, y + y_offset, x_offset, y_offset)
+    
+    # Draw the right child if exists
+    if node.right:
+        canvas.create_line(x, y, x + x_offset, y + y_offset)
+        draw_tree(canvas, node.right, x + x_offset, y + y_offset, x_offset, y_offset)
 
-def draw_node(canvas, x, y, text):
-    """Draw a circular node with text on the canvas."""
-    canvas.create_oval(
-        x - node_radius, y - node_radius,
-        x + node_radius, y + node_radius,
-        fill="lightblue"
-    )
-    canvas.create_text(x, y, text=text, font=("Arial", 12))
+# Function to handle inserting a left node
+def on_insert_left_button(canvas, root):
+    parent_value = "Root"  # Example: could be taken from an input field
+    new_value = "Left"  # New node value from input
+    root = insert_node(root, parent_value, new_value, "left")
+    canvas.delete("all")  # Clear the canvas
+    draw_tree(canvas, root, 300, 100)  # Redraw the tree
 
-def draw_tree(canvas, node, x, y, offset):
-    """Recursive function to draw the binary tree with lines."""
-    if node is not None:
-        draw_node(canvas, x, y, node.value)
-        # Draw lines to the left and right children
-        if node.left:
-            canvas.create_line(x, y + node_radius, x - offset, y + 100 - node_radius)
-            draw_tree(canvas, node.left, x - offset, y + 100, offset // 2)
-        if node.right:
-            canvas.create_line(x, y + node_radius, x + offset, y + 100 - node_radius)
-            draw_tree(canvas, node.right, x + offset, y + 100, offset // 2)
+# Function to handle inserting a right node
+def on_insert_right_button(canvas, root):
+    parent_value = "Root"  # Example: could be taken from an input field
+    new_value = "Right"  # New node value from input
+    root = insert_node(root, parent_value, new_value, "right")
+    canvas.delete("all")  # Clear the canvas
+    draw_tree(canvas, root, 300, 100)  # Redraw the tree
 
 def main():
-    root = Tk()
-    root.title("Binary Tree Visualizer")
-
-    # Canvas for drawing the tree
-    canvas = Canvas(root, width=canvas_width, height=canvas_height, bg="white")
+    root = tk.Tk()
+    canvas = tk.Canvas(root, width=600, height=400)
     canvas.pack()
 
-    # Buttons for operations
+    # Create the root node
+    root_node = TreeNode("Root")
+    
+    # Button to insert nodes
     button_frame = ttk.Frame(root)
     button_frame.pack()
+    
+    ttk.Button(button_frame, text="Insert Left Node", command=lambda: on_insert_left_button(canvas, root_node)).grid(row=0, column=0)
+    ttk.Button(button_frame, text="Insert Right Node", command=lambda: on_insert_right_button(canvas, root_node)).grid(row=0, column=1)
 
-    ttk.Button(button_frame, text="Clear & Reinitialize", command=lambda: reinitialize(canvas)).grid(row=0, column=0)
-    ttk.Button(button_frame, text="Insert Left Node", command=lambda: insert_node_to_left(canvas)).grid(row=0, column=1)
-    ttk.Button(button_frame, text="Insert Right Node", command=lambda: insert_node_to_right(canvas)).grid(row=0, column=2)
-
-    # Draw the initial tree (if any nodes are present)
-    if binary_tree["root"]:
-        draw_tree(canvas, binary_tree["root"], canvas_width // 2, 100, 100)
-
+    # Draw the initial tree
+    draw_tree(canvas, root_node, 300, 100)
+    
     root.mainloop()
 
 if __name__ == "__main__":
