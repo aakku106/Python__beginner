@@ -27,6 +27,7 @@ def insert_node(root, parent_value, new_value, position):
                 print(f"Right node already exists under {root.value}")
         return root
 
+    # Traverse through the tree to find the parent node
     if root.left:
         insert_node(root.left, parent_value, new_value, position)
     if root.right:
@@ -76,36 +77,43 @@ def on_insert_right_button(canvas, root, parent_value_entry, new_value_entry):
         print("Invalid input. Please enter valid integers.")
 
 def main():
-    root = tk.Tk()
-    canvas = tk.Canvas(root, width=600, height=400)
-    canvas.pack()
-
-    # Create the root node
+    root_window = tk.Tk()
+    root_window.title("Binary Tree Visualizer")
+    root_window.geometry("800x600")
+    
+    # Create the root node (the root of the tree)
     root_node = TreeNode(1)  # Root node starts with value 1
     
-    # Entry fields for parent node and new node values
-    entry_frame = ttk.Frame(root)
+    # Create a canvas for drawing the tree
+    canvas = tk.Canvas(root_window, width=800, height=400)
+    canvas.pack(pady=20)
+
+    # Entry frame to hold input fields
+    entry_frame = ttk.Frame(root_window)
     entry_frame.pack(pady=10)
-    
-    ttk.Label(entry_frame, text="Parent Node Value:").grid(row=0, column=0)
+
+    # Labels and entry fields for parent node and new node values
+    ttk.Label(entry_frame, text="Parent Node Value:").grid(row=0, column=0, padx=5, pady=5)
     parent_value_entry = ttk.Entry(entry_frame)
-    parent_value_entry.grid(row=0, column=1)
+    parent_value_entry.grid(row=0, column=1, padx=5, pady=5)
     
-    ttk.Label(entry_frame, text="New Node Value:").grid(row=1, column=0)
+    ttk.Label(entry_frame, text="New Node Value:").grid(row=1, column=0, padx=5, pady=5)
     new_value_entry = ttk.Entry(entry_frame)
-    new_value_entry.grid(row=1, column=1)
-    
-    # Button to insert nodes
-    button_frame = ttk.Frame(root)
+    new_value_entry.grid(row=1, column=1, padx=5, pady=5)
+
+    # Button frame for inserting left or right nodes
+    button_frame = ttk.Frame(root_window)
     button_frame.pack(pady=10)
-    
-    ttk.Button(button_frame, text="Insert Left Node", command=lambda: on_insert_left_button(canvas, root_node, parent_value_entry, new_value_entry)).grid(row=0, column=0)
-    ttk.Button(button_frame, text="Insert Right Node", command=lambda: on_insert_right_button(canvas, root_node, parent_value_entry, new_value_entry)).grid(row=0, column=1)
+
+    # Buttons to insert left or right nodes
+    ttk.Button(button_frame, text="Insert Left Node", command=lambda: on_insert_left_button(canvas, root_node, parent_value_entry, new_value_entry)).grid(row=0, column=0, padx=10)
+    ttk.Button(button_frame, text="Insert Right Node", command=lambda: on_insert_right_button(canvas, root_node, parent_value_entry, new_value_entry)).grid(row=0, column=1, padx=10)
 
     # Draw the initial tree
-    draw_tree(canvas, root_node, 300, 100)
-    
-    root.mainloop()
+    draw_tree(canvas, root_node, 400, 50)
+
+    # Start the Tkinter event loop
+    root_window.mainloop()
 
 if __name__ == "__main__":
     main()
